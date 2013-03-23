@@ -15,6 +15,11 @@ include_directories(${VSTSDK_INCLUDE_DIRS})
 set(AGAIN_SOURCE
   vstsdk2.4/public.sdk/samples/vst2.x/again/source/again.h
   vstsdk2.4/public.sdk/samples/vst2.x/again/source/again.cpp
+  PkgInfo
+)
+
+set_source_files_properties(PkgInfo PROPERTIES
+  MACOSX_PACKAGE_LOCATION .
 )
 
 set(CMAKE_CXX_FLAGS -m32)
