@@ -20,4 +20,10 @@ set(AGAIN_SOURCE
 set(CMAKE_CXX_FLAGS -m32)
 set(CMAKE_LDFLAGS -m32)
 
-add_library(again SHARED ${AGAIN_SOURCE} ${VSTSDK_PLUGIN_SOURCE})
+add_library(again MODULE ${AGAIN_SOURCE} ${VSTSDK_PLUGIN_SOURCE})
+set_target_properties(again PROPERTIES
+  BUNDLE true
+  BUNDLE_EXTENSION vst
+  MACOSX_BUNDLE_GUI_IDENTIFIER net.superquadratic.vstep
+  MACOSX_BUNDLE_BUNDLE_NAME VSTep
+)
