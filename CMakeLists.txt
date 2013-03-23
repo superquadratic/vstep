@@ -17,4 +17,7 @@ set(AGAIN_SOURCE
   vstsdk2.4/public.sdk/samples/vst2.x/again/source/again.cpp
 )
 
+set(CMAKE_CXX_FLAGS -m32)
+set(CMAKE_LDFLAGS -m32)
+
 add_library(again SHARED ${AGAIN_SOURCE} ${VSTSDK_PLUGIN_SOURCE})
