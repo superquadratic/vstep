@@ -1,2 +1,4 @@
 vstsdk2.4
 build
+
+*.sublime-workspace
