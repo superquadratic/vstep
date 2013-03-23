@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(again)
+project(VSTEP)
 
 set(VSTSDK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/vstsdk2.4)
 set(VSTSDK_INCLUDE_DIRS ${VSTSDK_DIR})
@@ -12,9 +12,9 @@ set(VSTSDK_PLUGIN_SOURCE
 
 include_directories(${VSTSDK_INCLUDE_DIRS})
 
-set(AGAIN_SOURCE
-  vstsdk2.4/public.sdk/samples/vst2.x/again/source/again.h
-  vstsdk2.4/public.sdk/samples/vst2.x/again/source/again.cpp
+set(VSTEP_SOURCE
+  src/vstep.h
+  src/vstep.cpp
   PkgInfo
 )
 
@@ -25,11 +25,11 @@ set_source_files_properties(PkgInfo PROPERTIES
 set(CMAKE_CXX_FLAGS -m32)
 set(CMAKE_LDFLAGS -m32)
 
-add_library(again MODULE ${AGAIN_SOURCE} ${VSTSDK_PLUGIN_SOURCE})
-set_target_properties(again PROPERTIES
+add_library(vStep MODULE ${VSTEP_SOURCE} ${VSTSDK_PLUGIN_SOURCE})
+set_target_properties(vStep PROPERTIES
   BUNDLE true
   BUNDLE_EXTENSION vst
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
   MACOSX_BUNDLE_GUI_IDENTIFIER net.superquadratic.vstep
-  MACOSX_BUNDLE_BUNDLE_NAME VSTep
+  MACOSX_BUNDLE_BUNDLE_NAME vStep
 )
