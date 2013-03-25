@@ -12,7 +12,7 @@ VStep::VStep(audioMasterCallback audioMaster)
 {
   setUniqueID('VSTP');
 
-  setNumInputs(2);
+  setNumInputs(0);
   setNumOutputs(2);
   isSynth();
 
@@ -70,13 +70,13 @@ VstInt32 VStep::getVendorVersion()
 //------------------------------------------------------------------------------
 void VStep::processReplacing(float** inputs, float** outputs, VstInt32 sampleFrames)
 {
-  memcpy(outputs[0], inputs[0], sampleFrames);
-  memcpy(outputs[1], inputs[1], sampleFrames);
+  memset(outputs[0], 0, sizeof(outputs) * sampleFrames);
+  memset(outputs[1], 0, sizeof(outputs) * sampleFrames);
 }
 
 //------------------------------------------------------------------------------
 void VStep::processDoubleReplacing(double** inputs, double** outputs, VstInt32 sampleFrames)
 {
-  memcpy(outputs[0], inputs[0], sampleFrames);
-  memcpy(outputs[1], inputs[1], sampleFrames);
+  memset(outputs[0], 0, sizeof(outputs) * sampleFrames);
+  memset(outputs[1], 0, sizeof(outputs) * sampleFrames);
 }
