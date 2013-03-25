@@ -19,7 +19,7 @@ VStep::VStep(audioMasterCallback audioMaster)
   canProcessReplacing();
   canDoubleReplacing();
 
-  vst_strncpy(programName, "Default", kVstMaxProgNameLen);  // default program name
+  vst_strncpy(programName, "Default", kVstMaxProgNameLen);
 }
 
 //------------------------------------------------------------------------------
@@ -43,27 +43,27 @@ void VStep::getProgramName(char* name)
 //------------------------------------------------------------------------------
 bool VStep::getEffectName(char* name)
 {
-  vst_strncpy(name, "Gain", kVstMaxEffectNameLen);
+  vst_strncpy(name, "vStep", kVstMaxEffectNameLen);
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool VStep::getProductString(char* text)
 {
-  vst_strncpy(text, "Gain", kVstMaxProductStrLen);
+  vst_strncpy(text, "vStep", kVstMaxProductStrLen);
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool VStep::getVendorString(char* text)
 {
-  vst_strncpy(text, "Steinberg Media Technologies", kVstMaxVendorStrLen);
+  vst_strncpy(text, "superquadratic.net", kVstMaxVendorStrLen);
   return true;
 }
 
 //------------------------------------------------------------------------------
 VstInt32 VStep::getVendorVersion()
-{ 
+{
   return 1000; 
 }
 
