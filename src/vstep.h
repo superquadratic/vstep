@@ -2,7 +2,8 @@
 
 #include "public.sdk/source/vst2.x/audioeffectx.h"
 
-//-------------------------------------------------------------------------------------------------------
+#include "pattern.h"
+
 class VStep : public AudioEffectX
 {
 public:
@@ -25,4 +26,5 @@ public:
 
 protected:
 	char programName[kVstMaxProgNameLen + 1];
+	Pattern pattern;
 };
