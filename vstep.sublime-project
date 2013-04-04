@@ -14,6 +14,7 @@
       "-isystem", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/usr/include/c++/4.2.1",
       "-F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/",
       "-I/usr/local/include",
+      "-I${project_path:vendor/UnitTest++/src}",
       "-I${project_path:vstsdk2.4}",
       "-I${project_path:src}",
       "-Wall"
