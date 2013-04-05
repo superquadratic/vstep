@@ -104,17 +104,16 @@ void VStep::processReplacing(float** inputs, float** outputs, VstInt32 sampleFra
   memset(outputs[0], 0, sizeof(outputs) * sampleFrames);
   memset(outputs[1], 0, sizeof(outputs) * sampleFrames);
 
-  VstTimeInfo* info = getTimeInfo(0xffff);
-
-  float beatsPerSecond = info->tempo / 60.0f;
-  float secondsPerBuffer = sampleFrames / info->sampleRate;
-  float beatsPerBuffer = secondsPerBuffer * beatsPerSecond;
-
-  float currentPpq = info->ppqPos;
-  float nextPpq = currentPpq + beatsPerBuffer;
+  VstTimeInfo* info = getTimeInfo(kVstTempoValid | kVstPpqPosValid);
 
   if (info->flags & kVstTransportPlaying)
   {
+    float beatsPerSecond = info->tempo / 60.0f;
+    float secondsPerBuffer = sampleFrames / info->sampleRate;
+    float beatsPerBuffer = secondsPerBuffer * beatsPerSecond;
+
+    float currentPpq = info->ppqPos;
+    float nextPpq = currentPpq + beatsPerBuffer;
     float nextStepPpq = 0.25f * ceilf(info->ppqPos * 4);
 
     while (nextStepPpq >= currentPpq && nextStepPpq < nextPpq)
@@ -136,27 +135,10 @@ void VStep::processReplacing(float** inputs, float** outputs, VstInt32 sampleFra
       }
 
       nextStepPpq += 0.25f;
-
-      for (VstInt32 i = 0; i < deltaFrames; ++i) {
-        outputs[0][i] = 0.0f;
-        outputs[1][i] = 0.0f;
-      }
-
-      for (VstInt32 i = deltaFrames; i < sampleFrames; ++i) {
-        if (((i - deltaFrames) / 100) % 2 == 0) {
-          outputs[0][i] = 1.0f;
-          outputs[1][i] = 1.0f;
-        }
-        else
-        {
-          outputs[0][i] = 0.0f;
-          outputs[1][i] = 0.0f;
-        }
-      }
     }
-
-    midiEventBuffer.send(this);
   }
+
+  midiEventBuffer.send(this);
 }
 
 //------------------------------------------------------------------------------
