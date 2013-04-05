@@ -2,29 +2,38 @@
 
 #include "public.sdk/source/vst2.x/audioeffectx.h"
 
+#include "midieventbuffer.h"
 #include "pattern.h"
 
 class VStep : public AudioEffectX
 {
 public:
-	VStep(audioMasterCallback audioMaster);
-	~VStep();
+  VStep(audioMasterCallback audioMaster);
+  ~VStep();
 
-	// Processing
-	virtual void processReplacing(float** inputs, float** outputs, VstInt32 sampleFrames);
-	virtual void processDoubleReplacing(double** inputs, double** outputs, VstInt32 sampleFrames);
+  // Capabilities
+  virtual VstInt32 canDo(char* feature);
 
-	// Program
-	virtual void setProgramName(char* name);
-	virtual void getProgramName(char* name);
+  // Processing
+  virtual void processReplacing(float** inputs, float** outputs, VstInt32 sampleFrames);
+  virtual void processDoubleReplacing(double** inputs, double** outputs, VstInt32 sampleFrames);
 
-	// Info
-	virtual bool getEffectName(char* name);
-	virtual bool getVendorString(char* text);
-	virtual bool getProductString(char* text);
-	virtual VstInt32 getVendorVersion();
+  // Program
+  virtual void setProgramName(char* name);
+  virtual void getProgramName(char* name);
 
-protected:
-	char programName[kVstMaxProgNameLen + 1];
-	Pattern pattern;
+  // Info
+  virtual bool getEffectName(char* name);
+  virtual bool getVendorString(char* text);
+  virtual bool getProductString(char* text);
+  virtual VstInt32 getVendorVersion();
+
+private:
+  typedef MidiEventBuffer::Key Key;
+
+  char programName[kVstMaxProgNameLen + 1];
+  Pattern pattern;
+  std::vector<Key> keyForChannel;
+
+  MidiEventBuffer midiEventBuffer;
 };

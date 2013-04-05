@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cmath>
 #include <iostream>
 
@@ -13,6 +14,7 @@ AudioEffect* createEffectInstance(audioMasterCallback audioMaster)
 VStep::VStep(audioMasterCallback audioMaster)
 : AudioEffectX(audioMaster, 1, 0) // 1 program, 0 parameters
 , pattern(8, 16) // 8 channels, 16 steps
+, keyForChannel(pattern.numChannels())
 {
   setUniqueID('VSTP');
 
@@ -26,15 +28,35 @@ VStep::VStep(audioMasterCallback audioMaster)
   vst_strncpy(programName, "Default", kVstMaxProgNameLen);
 
   pattern.set(0, 0);
-  pattern.set(0, 4);
-  pattern.set(0, 8);
-  pattern.set(0, 12);
+  pattern.set(1, 4);
+  pattern.set(2, 8);
+  pattern.set(3, 12);
+
+  for (unsigned int channel = 0; channel < pattern.numChannels(); ++channel)
+  {
+    keyForChannel[channel] = 36 + channel;
+  }
 }
 
 //------------------------------------------------------------------------------
 VStep::~VStep()
 {
   // nothing to do here
+}
+
+//------------------------------------------------------------------------------
+VstInt32 VStep::canDo(char* feature)
+{
+  if (!strcmp(feature, "sendVstEvents")) return 1;
+  if (!strcmp(feature, "sendVstMidiEvent")) return 1;
+  if (!strcmp(feature, "receiveVstEvents")) return -1;
+  if (!strcmp(feature, "receiveVstMidiEvent")) return -1;
+  if (!strcmp(feature, "receiveVstTimeInfo")) return 1;
+  if (!strcmp(feature, "offline")) return -1;
+  if (!strcmp(feature, "midiProgramNames")) return -1;
+  if (!strcmp(feature, "bypass")) return -1;
+
+  return AudioEffectX::canDo(feature);
 }
 
 //------------------------------------------------------------------------------
@@ -79,6 +101,9 @@ VstInt32 VStep::getVendorVersion()
 //------------------------------------------------------------------------------
 void VStep::processReplacing(float** inputs, float** outputs, VstInt32 sampleFrames)
 {
+  memset(outputs[0], 0, sizeof(outputs) * sampleFrames);
+  memset(outputs[1], 0, sizeof(outputs) * sampleFrames);
+
   VstTimeInfo* info = getTimeInfo(0xffff);
 
   float beatsPerSecond = info->tempo / 60.0f;
@@ -96,12 +121,29 @@ void VStep::processReplacing(float** inputs, float** outputs, VstInt32 sampleFra
     {
       unsigned int step = static_cast<unsigned int>(nextStepPpq * 4) % pattern.numSteps();
 
+      float framesPerBeat = info->sampleRate / beatsPerSecond;
+      VstInt32 deltaFrames = (nextStepPpq - currentPpq) * framesPerBeat;
+
+      assert(deltaFrames < sampleFrames);
+
+      for (unsigned int channel = 0; channel < pattern.numChannels(); ++channel)
+      {
+        if (pattern.isSet(channel, step))
+        {
+          Key key = keyForChannel[channel];
+          midiEventBuffer.addNote(deltaFrames, key, 100);
+        }
+      }
+
       nextStepPpq += 0.25f;
 
-      std::cout << "step: " << step << std::endl;
+      for (VstInt32 i = 0; i < deltaFrames; ++i) {
+        outputs[0][i] = 0.0f;
+        outputs[1][i] = 0.0f;
+      }
 
-      for (VstInt32 i = 0; i < sampleFrames; ++i) {
-        if ((i / 100) % 2 == 0) {
+      for (VstInt32 i = deltaFrames; i < sampleFrames; ++i) {
+        if (((i - deltaFrames) / 100) % 2 == 0) {
           outputs[0][i] = 1.0f;
           outputs[1][i] = 1.0f;
         }
@@ -111,13 +153,10 @@ void VStep::processReplacing(float** inputs, float** outputs, VstInt32 sampleFra
           outputs[1][i] = 0.0f;
         }
       }
-
-      return;
     }
-  }
 
-  memset(outputs[0], 0, sizeof(outputs) * sampleFrames);
-  memset(outputs[1], 0, sizeof(outputs) * sampleFrames);
+    midiEventBuffer.send(this);
+  }
 }
 
 //------------------------------------------------------------------------------

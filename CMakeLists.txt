@@ -17,6 +17,8 @@ include_directories(${VSTSDK_INCLUDE_DIRS})
 # Plugin Source
 
 set(VSTEP_SOURCE
+  src/midieventbuffer.h
+  src/midieventbuffer.cpp
   src/pattern.h
   src/pattern.cpp
   src/vstep.h
