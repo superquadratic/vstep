@@ -51,10 +51,15 @@ void MidiEventBuffer::send(AudioEffectX *plugin)
   }
 }
 
-void MidiEventBuffer::addNote(VstInt32 deltaFrames, Key key, VstInt32 length)
+void MidiEventBuffer::addNote(VstInt32 deltaFrames, Key key, unsigned char velocity, VstInt32 length)
 {
-  addEvent(deltaFrames, length, MidiMessage(MIDI_STATUS_NOTE_ON, 0, key, 127));
+  addEvent(deltaFrames, length, MidiMessage(MIDI_STATUS_NOTE_ON, 0, key, velocity));
   addEvent(deltaFrames + length, 0, MidiMessage(MIDI_STATUS_NOTE_OFF, 0, key, 0));
+}
+
+void MidiEventBuffer::addControlChange(VstInt32 deltaFrames, Controller controller, unsigned char value)
+{
+  addEvent(deltaFrames, 0, MidiMessage(MIDI_STATUS_CONTROL_CHANGE, 0, controller, value));
 }
 
 void MidiEventBuffer::addEvent(VstInt32 deltaFrames, VstInt32 length, MidiMessage msg)

@@ -31,9 +31,12 @@ public:
 private:
   typedef MidiEventBuffer::Key Key;
 
+  bool hostIsAbletonLive();
+
   char programName[kVstMaxProgNameLen + 1];
   Pattern pattern;
   std::vector<Key> keyForChannel;
 
   MidiEventBuffer midiEventBuffer;
+  unsigned char keepAlive;
 };

@@ -15,6 +15,7 @@ VStep::VStep(audioMasterCallback audioMaster)
 : AudioEffectX(audioMaster, 1, 0) // 1 program, 0 parameters
 , pattern(8, 16) // 8 channels, 16 steps
 , keyForChannel(pattern.numChannels())
+, keepAlive(0)
 {
   setUniqueID('VSTP');
 
@@ -130,11 +131,21 @@ void VStep::processReplacing(float** inputs, float** outputs, VstInt32 sampleFra
         if (pattern.isSet(channel, step))
         {
           Key key = keyForChannel[channel];
-          midiEventBuffer.addNote(deltaFrames, key, 100);
+          midiEventBuffer.addNote(deltaFrames, key, 127, 100);
         }
       }
 
       nextStepPpq += 0.25f;
+    }
+
+    if (hostIsAbletonLive())
+    {
+      // Ableton Live deactivates the plugin if it produces silence and no MIDI events
+      // for some time. As a workaround, we keep sending program changes for controller 0.
+      // See http://fogbugz.nuedge.net/default.asp?W159.
+
+      midiEventBuffer.addControlChange(0, 0, keepAlive);
+      keepAlive = 1 - keepAlive;
     }
 
     midiEventBuffer.send(this);
@@ -146,4 +157,27 @@ void VStep::processDoubleReplacing(double** inputs, double** outputs, VstInt32 s
 {
   memset(outputs[0], 0, sizeof(outputs) * sampleFrames);
   memset(outputs[1], 0, sizeof(outputs) * sampleFrames);
+}
+
+//------------------------------------------------------------------------------
+bool VStep::hostIsAbletonLive()
+{
+  static int isAbleton = -1;
+
+  if (isAbleton == -1)
+  {
+    char vendor[65];
+    getHostVendorString(vendor);
+
+    if (strcmp(vendor, "Ableton") == 0)
+    {
+      isAbleton = 1;
+    }
+    else
+    {
+      isAbleton = 0;
+    }
+  }
+
+  return isAbleton == 1;
 }

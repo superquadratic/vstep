@@ -3,7 +3,8 @@
 enum MidiStatus
 {
   MIDI_STATUS_NOTE_OFF = 0x8,
-  MIDI_STATUS_NOTE_ON = 0x9
+  MIDI_STATUS_NOTE_ON = 0x9,
+  MIDI_STATUS_CONTROL_CHANGE = 0xb
 };
 
 class MidiMessage
@@ -19,13 +20,15 @@ class MidiEventBuffer
 {
 public:
   typedef unsigned char Key;
+  typedef unsigned char Controller;
 
   MidiEventBuffer();
   ~MidiEventBuffer();
 
   void send(AudioEffectX* plugin);
 
-  void addNote(VstInt32 deltaFrames, Key key, VstInt32 length);
+  void addNote(VstInt32 deltaFrames, Key key, unsigned char velocity, VstInt32 length);
+  void addControlChange(VstInt32 deltaFrames, Controller controller, unsigned char value);
 
 private:
   static const unsigned char MAX_EVENT_COUNT = 64;
