@@ -136,9 +136,9 @@ void VStep::processReplacing(float** inputs, float** outputs, VstInt32 sampleFra
 
       nextStepPpq += 0.25f;
     }
-  }
 
-  midiEventBuffer.send(this);
+    midiEventBuffer.send(this);
+  }
 }
 
 //------------------------------------------------------------------------------

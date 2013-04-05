@@ -43,9 +43,12 @@ MidiEventBuffer::~MidiEventBuffer()
 
 void MidiEventBuffer::send(AudioEffectX *plugin)
 {
-  events->numEvents = eventCount;
-  plugin->sendVstEventsToHost(events);
-  eventCount = 0;
+  if (eventCount > 0)
+  {
+    events->numEvents = eventCount;
+    plugin->sendVstEventsToHost(events);
+    eventCount = 0;
+  }
 }
 
 void MidiEventBuffer::addNote(VstInt32 deltaFrames, Key key, VstInt32 length)
