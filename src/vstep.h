@@ -3,6 +3,7 @@
 #include "public.sdk/source/vst2.x/audioeffectx.h"
 
 #include "midieventbuffer.h"
+#include "oscpatternlistener.h"
 #include "pattern.h"
 
 class VStep : public AudioEffectX
@@ -34,8 +35,10 @@ private:
   bool hostIsAbletonLive();
 
   char programName[kVstMaxProgNameLen + 1];
-  Pattern pattern;
   std::vector<Key> keyForChannel;
+
+  Pattern pattern;
+  OscPatternListener listener;
 
   MidiEventBuffer midiEventBuffer;
   unsigned char keepAlive;

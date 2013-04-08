@@ -13,8 +13,9 @@ AudioEffect* createEffectInstance(audioMasterCallback audioMaster)
 //------------------------------------------------------------------------------
 VStep::VStep(audioMasterCallback audioMaster)
 : AudioEffectX(audioMaster, 1, 0) // 1 program, 0 parameters
-, pattern(8, 16) // 8 channels, 16 steps
 , keyForChannel(pattern.numChannels())
+, pattern(8, 16) // 8 channels, 16 steps
+, listener("7770", &pattern)
 , keepAlive(0)
 {
   setUniqueID('VSTP');
@@ -27,11 +28,6 @@ VStep::VStep(audioMasterCallback audioMaster)
   canDoubleReplacing();
 
   vst_strncpy(programName, "Default", kVstMaxProgNameLen);
-
-  pattern.set(0, 0);
-  pattern.set(1, 4);
-  pattern.set(2, 8);
-  pattern.set(3, 12);
 
   for (unsigned int channel = 0; channel < pattern.numChannels(); ++channel)
   {

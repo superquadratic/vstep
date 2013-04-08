@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(VSTEP)
 
+
 # VST Framework
 
 set(VSTSDK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/vstsdk2.4)
@@ -14,11 +15,14 @@ set(VSTSDK_PLUGIN_SOURCE
 
 include_directories(${VSTSDK_INCLUDE_DIRS})
 
+
 # Plugin Source
 
 set(VSTEP_SOURCE
   src/midieventbuffer.h
   src/midieventbuffer.cpp
+  src/oscpatternlistener.h
+  src/oscpatternlistener.cpp
   src/pattern.h
   src/pattern.cpp
   src/vstep.h
@@ -32,12 +36,15 @@ set_source_files_properties(PkgInfo PROPERTIES
   MACOSX_PACKAGE_LOCATION .
 )
 
+
 # Build Plugin
 
 set(CMAKE_CXX_FLAGS -m32)
 set(CMAKE_LDFLAGS -m32)
 
 add_library(vStep MODULE ${VSTEP_SOURCE} ${VSTSDK_PLUGIN_SOURCE})
+target_link_libraries(vStep lo)
+
 set_target_properties(vStep PROPERTIES
   BUNDLE true
   BUNDLE_EXTENSION vst
@@ -45,6 +52,7 @@ set_target_properties(vStep PROPERTIES
   MACOSX_BUNDLE_GUI_IDENTIFIER net.superquadratic.vstep
   MACOSX_BUNDLE_BUNDLE_NAME vStep
 )
+
 
 # Test Source
 
@@ -73,9 +81,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vendor/UnitTest++/src)
 
 set(VSTEP_TESTS
   tests/main.cpp
+  tests/oscpatternlistener-tests.cpp
   tests/pattern-tests.cpp
 )
+
 
 # Build Tests
 
 add_executable(vStepTests ${VSTEP_TESTS} ${UNITTEST_CPP_SOURCE} ${VSTEP_SOURCE} ${VSTSDK_PLUGIN_SOURCE})
+target_link_libraries(vStepTests lo)
